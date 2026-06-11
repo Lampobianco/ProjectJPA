@@ -9,7 +9,11 @@ import com.betacom.jpa.dto.input.SocioReq;
 import com.betacom.jpa.dto.output.SocioDTO;
 import com.betacom.jpa.mapping.SocioMap;
 import com.betacom.jpa.models.Socio;
+import com.betacom.jpa.models.Abbonamento;
+import com.betacom.jpa.repositories.IAbbonamentoRepository;
 import com.betacom.jpa.repositories.ISocioRepository;
+
+import java.time.LocalDate;
 import com.betacom.jpa.services.interfaces.ISocioServices;
 
 import exceptions.AcademyException;
@@ -22,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SocioImpl implements ISocioServices{
 
 	private final ISocioRepository repS;
+	private final IAbbonamentoRepository abbR;
 
 	@Transactional
 	@Override
@@ -72,13 +77,46 @@ public class SocioImpl implements ISocioServices{
 		Socio soc = repS.findById(id)
 				.orElseThrow(() -> new AcademyException("Socio non trovato"));
 
+		if (!soc.getAbbonamento().isEmpty()) {
+			List<Abbonamento> scaduti = soc.getAbbonamento().stream()
+					.filter(ab -> ab.getDataIscrizione()
+							.plusMonths(ab.getDurataValidita().longValue())
+							.isBefore(LocalDate.now()))
+					.toList();
+			soc.getAbbonamento().removeAll(scaduti);
+			abbR.deleteAll(scaduti);
+		}
+
+		if (!soc.getAbbonamento().isEmpty())
+			throw new AcademyException("Socio con abbonamenti attivi");
+
 		repS.delete(soc);
 	}
 
 	@Override
 	public List<SocioDTO> list() throws Exception {
 		log.debug("list");
+		List<Socio> ss = repS.searchByCognome("A");
+//		List<Socio> ss = repS.findByCognomeStartingWith("A");
+		ss.forEach(s -> log.debug("prova: {}", s.toString()));
+
 		List<Socio> lS = repS.findAll();
+		return SocioMap.buildSocioDTOList(lS);
+	}
+
+	@Override
+	public List<SocioDTO> search(String nome, String cognome, Integer attivitaId) throws Exception {
+		log.debug("search nome={} cognome={} attivitaId={}", nome, cognome, attivitaId);
+		String n = (nome != null) ? "%" + nome.toLowerCase() + "%" : "%";
+		String c = (cognome != null) ? "%" + cognome.toLowerCase() + "%" : "%";
+		List<Socio> lS = repS.search(n, c, attivitaId);
+		return SocioMap.buildSocioDTOList(lS);
+	}
+
+	@Override
+	public List<SocioDTO> listByAttivita(Integer id) throws Exception {
+		log.debug("listByAttivita {}", id);
+		List<Socio> lS = repS.selectByAttivita(id);
 		return SocioMap.buildSocioDTOList(lS);
 	}
 

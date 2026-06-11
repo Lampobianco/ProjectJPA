@@ -10,6 +10,8 @@ import lombok.ToString;
 public class AbbonamentoReq {
 	private Integer id;
 	private String dataIscrizione;
+	private String dataPagamento;
 	private Integer socioId;
 	private Integer durataValidita;
+	private Integer attivitaId;
 }

@@ -11,4 +11,6 @@ public interface ISocioServices {
 	void delete(Integer id) throws Exception;
 	List<SocioDTO> list() throws Exception;
 	SocioDTO getById(Integer id) throws Exception;
+	List<SocioDTO> listByAttivita(Integer id) throws Exception;
+	List<SocioDTO> search(String nome, String cognome, Integer attivitaId) throws Exception;
 }

@@ -13,11 +13,9 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SocioReq {
+public class AttivitaReq {
 	private Integer id;
-	private String cognome;
-	private String nome;
-	private String codiceFiscale;
-	private String email;
+	private String descrizione;
+	private Long prezzo;
 
 }

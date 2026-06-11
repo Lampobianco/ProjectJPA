@@ -2,6 +2,7 @@ package com.betacom.jpa.mapping;
 
 import java.util.List;
 
+import com.betacom.jpa.dto.output.AbbonamentoDTO;
 import com.betacom.jpa.dto.output.CertificatoDTO;
 import com.betacom.jpa.dto.output.SocioDTO;
 import com.betacom.jpa.models.Socio;
@@ -28,6 +29,7 @@ public class SocioMap {
 						.dataCertificato(s.getCertificato().getDataCertificato())
 						.build()
 						)
+				.abbonamento(AbbonamentoMap.buildAbbonamentoDTOList(s.getAbbonamento()))
 				.build();
 	}
 }

@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+### Local config (never commit) ###
+**/application-local.properties
+
 ### Eclipse ###
 *.class
 *.jar
